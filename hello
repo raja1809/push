@@ -1,1 +1,421 @@
-hello world
+LAB – 01: K-Means and K-Medoids
+Task 1 :
+  Code:
+  data<- read.csv("iris.csv",row.names=1)
+df<- scale(data)
+set.seed(112)
+fit<- kmeans(df,2)
+fit$size
+fit$withinss
+fit$tot.withinss # Within Cluster Sum of Squares (WCSS)
+Kmax<- 1
+WCSS <- rep(NA,Kmax)
+nClust<- list()
+for (i in 1:Kmax){
+  fit<- kmeans(df,i)
+  WCSS[i] <- fit$tot.withinss
+  nClust[[i]] <- fit$size
+}
+plot(1:Kmax,WCSS,type="b",pch=19)
+#install.packages("factoextra")
+library(factoextra)
+fviz_nbclust(df, kmeans, method = "wss")
+
+
+Task 2:
+  Code:
+  data<- read.csv("USArrests.csv",row.names=1)
+df<- scale(data)
+set.seed(112)
+fit<- kmeans(df,2)
+fit$size
+fit$withinss
+fit$tot.withinss # Within Cluster Sum of Squares (WCSS)
+Kmax<- 1
+WCSS <- rep(NA,Kmax)
+nClust<- list()
+for (i in 1:Kmax){
+  fit<- kmeans(df,i)
+  WCSS[i] <- fit$tot.withinss
+  nClust[[i]] <- fit$size
+}
+plot(1:Kmax,WCSS,type="b",pch=19)
+#install.packages("factoextra")
+library(factoextra)
+fviz_nbclust(df, kmeans, method = "wss")
+
+Task 3:
+  Code:
+  library(datasets)
+library(factoextra)
+# Load the iris dataset
+data(iris)
+# Subset the dataset to include only the first two features
+df <- iris[, 1:2]
+# Scale the data
+df <- scale(df)
+# Compute the elbow curve
+Kmax <- 1
+WCSS <- rep(NA, Kmax)
+nClust <- list()
+for (i in 1:Kmax) {
+  fit <- kmeans(df, i)
+  WCSS[i] <- fit$tot.withinss
+  nClust[[i]] <- fit$size
+}
+plot(1:Kmax, WCSS, type = "b", pch = 19)
+#install.packages("factoextra")
+library(factoextra)
+fviz_nbclust(df, kmeans, method = "wss")
+
+
+Task 4:
+  Code:
+  library(datasets)
+library(factoextra)
+# Load the USArrests dataset
+data(USArrests)
+# Subset the dataset to include only the Murder and Assault features
+df <- USArrests[, c("Murder", "Assault")]
+# Scale the data
+df <- scale(df)
+# Compute the elbow curve
+Kmax <- 1
+WCSS <- rep(NA, Kmax)
+nClust <- list()
+for (i in 1:Kmax) {
+  fit <- kmeans(df, i)
+  WCSS[i] <- fit$tot.withinss
+  nClust[[i]] <- fit$size
+}
+plot(1:Kmax, WCSS, type = "b", pch = 19)
+#install.packages("factoextra")
+library(factoextra)
+fviz_nbclust(df, kmeans, method = "wss")
+
+
+LAB – 02: Hierarchical Clustering
+Task 1 :
+  With Euclidian complete with US Arrests when k=4:
+  Code:
+  rm(list=ls())
+data<- read.csv("C:\\Users\\student\\Downloads\\USArrests
+(1).csv",row.names=1)
+df<- scale(data)
+dissim<- dist(df, method = 'euclidean')
+hierClust<- hclust(dissim, method = 'complete')
+plot(hierClust)
+cluster<- cutree(hierClust, k = 4)
+# install.packages("clValid")
+library(clValid)
+dunn(dissim, cluster)
+rect.hclust(hierClust, k = 4, border = 2:4)
+abline(h = 4, col = 'red')
+
+
+
+LAB – 03: Gradient Descent Optimization
+Task 1 :
+  Code:
+  rm(list=ls())
+data <- mtcars
+GRADIENT.DESCENT <- function(y, x, alpha, conv_threshold, n, max_iter) {
+  plot(x, y, col = "blue", pch = 20)
+  m <- runif(1, 0, 1)
+  c <- runif(1, 0, 1)
+  yhat <- m * x + c
+  MSE <- sum((y - yhat) ^ 2) / n
+  converged = F
+  iterations = 0
+  while(converged == F) {
+    m_new <- m - alpha * ((1 / n) * (sum((yhat - y) * x)))
+    c_new <- c - alpha * ((1 / n) * (sum(yhat - y)))
+    m <- m_new
+    c <- c_new
+    yhat <- m * x + c
+    MSE_new <- sum((y - yhat) ^ 2) / n
+    if(MSE - MSE_new <= conv_threshold) {
+      abline(c, m)
+      converged = T
+      return(paste("Optimal intercept:", c, "Optimal slope:", m, "No of iterations:", iterations,"MSE:", MSE_new))
+    }
+    iterations = iterations + 1
+    if(iterations >= max_iter) {
+      abline(c, m)
+      converged = T
+      return(paste("Optimal intercept:", c, "Optimal slope:", m, "No of iterations:", iterations,"MSE:", MSE_new))
+    }
+  }
+}
+GRADIENT.DESCENT(data$mpg, data$disp, 0.85, 0.001, length(data$mpg), 2500)
+slr <- lm(mpg ~ wt, data = mtcars)
+slr$coef
+mpg_p <- predict(slr)
+sqerr <- (data$mpg - mpg_p)^2
+MSE.SLR <- sum(sqerr)/length(data$mpg)
+
+
+
+LAB – 04: Regression
+Task 1 :
+  Linear regression on any data of your choice
+Code:
+  install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("broom")
+install.packages("ggpubr")
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(ggpubr)
+data(mtcars)
+plot(mpg ~ wt, data = mtcars, col = 2)
+fit <- lm(mpg ~ wt, data = mtcars)
+summary(fit)
+abline(fit, col = 3, lwd = 2)
+bs <- round(coef(fit), 3)
+lmlab <- paste0("mpg = ", bs[1], ifelse(sign(bs[2]) == 1, " + ", " - "), abs(bs[2]), " wt")
+mtext(lmlab, 3, line = -2)
+
+
+Task 2:
+  Find the 3 best performance metrics to measure the performance of linear regression on your data. It can be value based or graph based.
+Code:
+  data(mtcars)
+predictors <- c("mpg", "hp")
+target <- "qsec"
+model <- lm(formula = paste(target, "~", paste(predictors, collapse = "+")), data = mtcars)
+predicted_values <- predict(model, newdata = mtcars)
+true_values <- mtcars[[target]]
+n <- length(true_values)
+mae <- mean(abs(true_values - predicted_values))
+cat("Mean Absolute Error:", round(mae, 2), "\n")
+mse <- mean((true_values - predicted_values)^2)
+cat("Mean Squared Error:", round(mse, 2), "\n")
+y_mean <- mean(true_values)
+ss_total <- sum((true_values - y_mean)^2)
+ss_residual <- sum((true_values - predicted_values)^2)
+r_squared <- 1 - (ss_residual / ss_total)
+cat("R-squared Score:", round(r_squared, 2), "\n")
+
+
+Task 3:
+  Multiple regressions on the same data you have used for linear regression
+Code:
+  data(mtcars)
+model <- lm(mpg ~ disp + hp + drat, data = mtcars)
+mtcars$predicted_mpg <- predict(model, newdata = mtcars)
+head(mtcars)
+
+
+Task 4:
+  Use the same 3 performance metrics used for linear regression to measure the performance of multiple linear regression on your data.
+Code:
+  data(mtcars)
+model <- lm(mpg ~ disp + hp + drat, data = mtcars)
+predicted_mpg <- predict(model, newdata = mtcars)
+rss <- sum((mtcars$mpg - predicted_mpg)^2)
+tss <- sum((mtcars$mpg - mean(mtcars$mpg))^2)
+r_squared <- 1 - (rss / tss)
+cat("RSS (Residual Sum of Squares):", rss, "\n")
+cat("TSS (Total Sum of Squares):", tss, "\n")
+cat("R-squared:", r_squared, "\n")
+
+
+
+LAB – 05: SVM
+Task 1 :
+  Use at least 3 different kernels on the same data and same feature and observe how it affects the result.
+Code:
+  rm(list=ls())
+data = read.csv("C:/Users/student/Downloads/social.csv")
+library(dplyr)
+data=sample_n(data,80)
+data = data[3:5]
+data$Purchased = factor(data$Purchased,levels=c(0,1))
+data_TRAIN<-sample_n(data,0.9*length(data$Purchased))
+data_TEST<-setdiff(data,data_TRAIN)
+data_TRAIN[-3] <- scale(data_TRAIN[-3])
+data_TEST[-3] <- scale(data_TEST[-3])
+library(e1071)
+SVMclassifier = svm(formula = Purchased ~ .,
+                    data = data_TRAIN,
+                    type = 'C-classification',
+                    kernel = 'linear')
+plot(SVMclassifier,data_TRAIN)
+y_p = predict(SVMclassifier, newdata = data_TEST[-3])
+library(caret)
+confusionMatrix(table(y_p,data_TEST$Purchased))
+
+
+LAB – 06: Logistic Regression
+Task:
+  1) Split the data into train and test set
+2) Observe the change in confusion matrix with different decision threshold
+Code:
+  data<- read.csv("CreditWorthiness.csv",stringsAsFactors = T)
+size = nrow(data)
+train_split = 0.9
+split_idx = train_split * size;
+train_data = data[1:split_idx,]
+split_idx = split_idx + 1
+test_data = data[split_idx:size,]
+logreg<- glm(formula = train_data$creditScore ~.,family='binomial', data = train_data)
+summary(logreg)
+logitrain<- predict(logreg, type='response')
+plot(logitrain)
+tapply(train_data, train_data$creditScore,mean)
+logitest<- predict(logreg, newdata = test_data, type='response')
+plot(logitest)
+tapply(logitest,test_data$creditScore,mean)
+test_data[logitest<=0.9, "LogiTest"]="bad"
+test_data[logitest>0.9, "LogiTest"]="good"
+library(caret)
+confusionMatrix(table(test_data[,5],test_data[,6]),positive='good')
+
+
+
+
+LAB – 07: ANOVA
+Task :
+  1) Solve the problem discussed in class using R
+Code:
+  rm(list=ls())
+data <- data.frame(med = c(10,12,9,15,13),exe=c(6,8,3,0,2), diet=c(5,9,12,8,4))
+library(dplyr)
+group_by(data,exe,diet) %>% summarise(count = n(),mean = mean(med, na.rm = TRUE))
+# ANOVA
+result<- aov(med~exe+diet, data = data)
+summary(result)
+data<- PlantGrowth
+library(dplyr)
+group_by(data,group) %>% summarise(count = n(),mean = mean(weight, na.rm = TRUE))
+result<- aov(weight~group, data = data)
+summary(result)
+TukeyHSD(result)
+plot(result, 1)
+plot(result, 2)
+kruskal.test(weight~group, data = data)
+
+
+
+LAB – 08: Time Series Analysis
+Task :
+  1) Predict whether the monsoon rainfall in Chennai this year is going to
+be normal, below normal or above normal.
+Code:
+  # Load necessary libraries
+  install.packages(c("forecast", "ggplot2", "tidyverse", "zoo", "tseries"))
+library(forecast)
+library(ggplot2)
+library(tidyverse)
+library(zoo)
+library(tseries)
+
+# Load the data
+data <- read. csv('C:/Users/student/Downloads/chennai_rainfall.csv. csv')
+
+# Reshape the data to long format
+data_long <- data %>%
+  pivot_longer(cols = -Year, names_to = "Month", values_to = "Rainfall")
+
+# Convert Year and Month to Date
+data_long$Date <- as. Date(paste(data_long$Year, data_long$Month, 1, sep="-"), "%Y-%b-%d")
+
+# Create a time series object
+ts_data <- ts(data_long$Rainfall, start=c(1901, 1), frequency=12)
+# Fit the ARIMA model
+fit <- auto. arima(ts_data)
+
+# Forecast for next 24 months
+forecast_data <- forecast(fit, h=24)
+
+# Plot the forecast
+autoplot(forecast_data) +
+  ggtitle("Rainfall Forecast for 2024") +
+  x1ab("Month") +
+  ylab("Rainfall") +
+  geom_bar(stat="identity")
+
+# Print the forecasted values
+forecast_values <- data. frame(Date = seq(as. Date("2024/01/01"), by = "month", length. out = 24),
+                               Rainfall = forecast_data$mean)
+
+print(forecast_values)
+
+
+
+
+MACHINE LEARNING ON TEXT DATA LAB - 09
+CODE:
+  rm(list=ls())
+data<- read.csv("C:/Users/student/Downloads/ClothReview (1).csv")
+library(dplyr)
+data=sample_n(data,100)
+library(readr)
+library(tm)
+install.packages("SnowballC")
+library(SnowballC)
+corpus = VCorpus(VectorSource(data$Review.Text))
+corpus[[1]][1]
+data$Recommended.IND[1]
+corpus = tm_map(corpus,PlainTextDocument)
+corpus = tm_map(corpus,content_transformer(tolower))
+corpus[[1]][1]
+corpus = tm_map(corpus,removePunctuation)
+corpus[[1]][1]
+corpus = tm_map(corpus, removeWords, c("cloth", stopwords("english")))
+corpus = tm_map(corpus, stemDocument)
+frequencies = DocumentTermMatrix(corpus)
+sparse = removeSparseTerms(frequencies, 0.99)
+tSparse = as.data.frame(as.matrix(sparse))
+colnames(tSparse) = make.names(colnames(tSparse))
+tSparse$recommended = data$Recommended.IND
+library(caTools)
+split = sample.split(tSparse$recommended, SplitRatio = 0.8)
+trainSparse = subset(tSparse, split==TRUE)
+testSparse = subset(tSparse, split==FALSE)
+library(randomForest)
+trainSparse$recommended = as.factor(trainSparse$recommended)
+testSparse$recommended= as.factor(testSparse$recommended)
+RF_model = randomForest(recommended ~ ., data=trainSparse)
+predictRF = predict(RF_model, newdata=testSparse)
+library(caret)
+confusionMatrix(table(predictRF,testSparse$recommended),positive='1')
+
+
+
+
+SENTIMENT ANALYSIS LAB - 10
+CODE:
+  data<- read.csv("C:/Users/student/Downloads/ClothReview (1).csv")
+library(dplyr)
+data=sample_n(data,100)
+library(readr)
+library(tm)
+library(SnowballC)
+corpus = VCorpus(VectorSource(data$Review.Text))
+corpus = tm_map(corpus,PlainTextDocument)
+corpus = tm_map(corpus,content_transformer(tolower))
+corpus = tm_map(corpus,removeNumbers)
+corpus = tm_map(corpus,removePunctuation)
+corpus = tm_map(corpus, removeWords, c("cloth", stopwords("english")))
+corpus = tm_map(corpus, stemDocument)
+frequencies = TermDocumentMatrix(corpus)
+sparse = removeSparseTerms(frequencies, 0.99)
+a <- as.matrix(sparse)
+a_s<- sort(rowSums(a),decreasing=TRUE)
+a_s<- data.frame(word = names(a_s),frequency=a_s)
+barplot(a_s[1:6,]$freq, las = 1, names.arg = a_s[1:6,]$word,
+        col ="lightgreen", main ="Top 6 most frequent words",
+        ylab = "Frequencies of words")
+library("wordcloud")
+library("RColorBrewer")
+wordcloud(words = a_s$word, freq = a_s$frequency, min.freq = 5,
+          max.words=50, random.order=FALSE, rot.per=0.40,
+          colors=brewer.pal(8, "Dark2"))
+findAssocs(sparse, terms = c("love","great","like"), corlimit = 0.35)
+install.packages("syuzhet")
+library("syuzhet")
+syuzhet_vector<- get_sentiment(data$Review.Text, method="syuzhet")
+summary(syuzhet_vector)
